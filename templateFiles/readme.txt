@@ -1,7 +1,7 @@
-`@codellins/tailwind-setup`, designed for setting up a Tailwind CSS environment in React projects:
+`@collinsadi/tailwind-setup`, designed for setting up a Tailwind CSS environment in React projects:
 
 
-# @codellins/tailwind-setup
+# @collinsadi/tailwind-setup
 
 **Version**: 1.0.0
 
@@ -14,11 +14,11 @@
 
 ## Overview
 
-`@codellins/tailwind-setup` is a powerful command-line tool for simplifying the process of creating a development environment for Tailwind CSS in your React projects. This tool automates the setup by generating essential files and installing the required dependencies.
+`@collinsadi/tailwind-setup` is a powerful command-line tool for simplifying the process of creating a development environment for Tailwind CSS in your React projects. This tool automates the setup by generating essential files and installing the required dependencies.
 
 ## Prerequisites
 
-Before using `@codellins/tailwind-setup`, ensure you have the following software installed on your machine:
+Before using `@collinsadi/tailwind-setup`, ensure you have the following software installed on your machine:
 
 - [Node.js](https://nodejs.org/): This is required to execute JavaScript scripts.
 
@@ -27,7 +27,7 @@ Before using `@codellins/tailwind-setup`, ensure you have the following software
 To use this tool, you can install it globally on your system using npm. Open your terminal and run the following command:
 
 ```bash
-npm install -g @codellins/tailwind-setup
+npm install -g @collinsadi/tailwind-setup
 ```
 
 ## Getting Started

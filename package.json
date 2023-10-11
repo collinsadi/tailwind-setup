@@ -1,0 +1,36 @@
+{
+  "name": "@codellins/tailwind-setup",
+  "version": "1.0.0",
+  "description": "An Easy Tailwind Css Environment Set Up for React",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/collinsadi/tailwind-setup.git"
+  },
+  "bin": {
+    "codellins-tailwind": "./index.js"
+  },
+  "keywords": [
+    "Chakra-ui",
+    "codellins",
+    "React"
+  ],
+  "author": "Collins Adi",
+  "type": "module",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/collinsadi/tailwind-setup/issues"
+  },
+  "homepage": "https://github.com/collinsadi/tailwind-setup#readme",
+  "dependencies": {
+    "child_process": "^1.0.2",
+    "codellins": "^1.5.2",
+    "colors": "^1.4.0",
+    "commander": "^11.0.0",
+    "inquirer": "^9.2.11",
+    "mkdirp": "^3.0.1"
+  }
+}

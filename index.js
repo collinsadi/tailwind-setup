@@ -258,14 +258,20 @@ import './App.css';
 function App() {
 
   return (
-   <div className="container mx-auto bg-gray-200 rounded-xl shadow border p-8 m-10">
-      <p className="text-3xl text-gray-700 font-bold mb-5">
-        Welcome!
-      </p>
-      <p className="text-gray-500 text-lg">
-        React and Tailwind CSS in action
-      </p>
-    </div>
+   <div className="bg-gradient-to-r from-blue-500 to-purple-500 p-8 rounded-lg shadow-lg m-10">
+  <h1 className="text-3xl font-bold text-white mb-5">Welcome to Our App!</h1>
+  <p className="text-lg text-white">Experience the power of React and Tailwind CSS.</p>
+  <p className="text-gray-300 mt-4">Brought to you by Collins Adi</p>
+  <a
+    href="https://collinsadi.vercel.app"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 mt-4 rounded-full inline-block"
+  >
+    Learn More
+  </a>
+</div>
+
   );
 }
 

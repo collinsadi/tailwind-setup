@@ -68,6 +68,10 @@ The tool sets up your project with the following structure:
   - `package.json` (Node.js package file)
   - `README.md` (Project README file)
 
+Additionally, the setup includes the following pre-installed packages:
+- `react-icons` for a wide range of icons.
+- `react-router-dom` for client-side routing in React applications.
+
 ## Troubleshooting
 
 - If you encounter any issues during the package installation, you can manually navigate to your project directory and run the following command to ensure that all required packages are installed correctly:

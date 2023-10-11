@@ -64,6 +64,7 @@ The tool sets up your project with the following structure:
     - `index.css` (CSS file)
     - `index.js` (JavaScript file)
   - `.gitignore` (Gitignore file)
+  - `tailwind.config.js` (Tailwind Configuration File)
   - `package.json` (Node.js package file)
   - `README.md` (Project README file)
 

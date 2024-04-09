@@ -1,108 +1,114 @@
 #!/usr/bin/env node
 
-import fs from "fs"
-import path from "path"
-import {execSync} from "child_process"
+import fs from "fs";
+import path from "path";
+import { execSync } from "child_process";
 import inquirer from "inquirer";
-import colors from "colors"
+import colors from "colors";
 
-const templatesFolder = path.join(process.cwd(), "templateFiles")
+const templatesFolder = path.join(process.cwd(), "templateFiles");
 
-const createTailwindTemplate = async ()=>{
+const createTailwindTemplate = async () => {
+  try {
+    const answers = await inquirer.prompt([
+      {
+        type: "input",
+        name: "name",
+        message: "Enter the app name:",
+        validate: (input) => input.trim() !== "",
+      },
+      {
+        type: "list",
+        name: "variant",
+        message: "Select a Variant:",
+        choices: [{ name: "Javascript" }, { name: "Typescript" }],
+      },
+    ]);
 
- const answers = await inquirer.prompt([
-    {
-      type: 'input',
-      name: 'name',
-      message: 'Enter the app name:',
-      validate: (input) => input.trim() !== '',
+    let { name, variant } = answers;
+
+    if (name.split(" ").length > 1) {
+      console.log(
+        "Please Enter a URL Friendly Name, refer to the docs for help".red
+      );
+      return;
     }
- ]);
-    
-const { name} = answers;
 
-if (name.split(" ").length > 1) {
-    
-    console.log("Please Enter a URL Friendly Name".blue)
-    return
-}
+    let targetFolder;
 
-// Create a directory for the new app
-  fs.mkdirSync(name);
+    let initialName = name;
 
-const targetFolder = path.join(process.cwd(), name)
-    const packageJson = `
-  {
-  "name": "${name.toLowerCase()}",
-  "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "@headlessui/react": "^1.7.17",
-    "@heroicons/react": "^2.0.18",
-    "codellins": "^1.3.0",
-    "react-icons": "^4.11.0",
-    "tailwindcss": "^2.2.16",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.15.0",
-    "react-scripts": "5.0.1",
-    "web-vitals": "^2.1.4"
-  },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  }
-}
+    if (name === ".") {
+      targetFolder = process.cwd();
+      name = process.cwd().split("/").pop();
 
-    
-    
-    `
-  const gitIgnore = `
- # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+      if (name.split(" ").length > 1) {
+        console.log(
+          "Please Enter a URL Friendly Name, refer to the docs for help".red
+        );
+        return;
+      }
+    } else {
+      fs.mkdirSync(name);
+      targetFolder = path.join(process.cwd(), name);
+    }
 
-# dependencies
-/node_modules
-/.pnp
-.pnp.js
-
-# testing
-/coverage
-
-# production
-/build
-
-# misc
-.DS_Store
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-`
-  const readMe = `
+    const packageJson = `{
+    "name": "${name.toLowerCase()}",
+    "private": true,
+    "version": "0.0.0",
+    "type": "module",
+    "scripts": {
+      "dev": "vite",
+      "build": "vite build",
+      "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+      "preview": "vite preview"
+    },
+    "dependencies": {
+      "react": "^18.2.0",
+      "react-dom": "^18.2.0",
+      "tailwindcss": "^2.2.16"
+    },
+    "devDependencies": {
+      "@types/react": "^18.2.66",
+      "@types/react-dom": "^18.2.22",
+      "@vitejs/plugin-react": "^4.2.1",
+      "eslint": "^8.57.0",
+      "eslint-plugin-react": "^7.34.1",
+      "eslint-plugin-react-hooks": "^4.6.0",
+      "eslint-plugin-react-refresh": "^0.4.6",
+      "postcss": "^8.4.35",
+      "tailwindcss": "^3.4.1",
+      "vite": "^5.2.0"
+    }
+}`;
+    const gitIgnore = `
+  # Logs
+  logs
+  *.log
+  npm-debug.log*
+  yarn-debug.log*
+  yarn-error.log*
+  pnpm-debug.log*
+  lerna-debug.log*
+  
+  node_modules
+  dist
+  dist-ssr
+  *.local
+  
+  # Editor directories and files
+  .vscode/*
+  !.vscode/extensions.json
+  .idea
+  .DS_Store
+  *.suo
+  *.ntvs*
+  *.njsproj
+  *.sln
+  *.sw?
+  `;
+    const readMe = `
    
 @collinsadi/tailwind-setup, designed for setting up a Tailwind CSS environment in React projects:
 
@@ -181,86 +187,145 @@ This tool is released under the ISC License.
 Happy coding!
 `;
 
-  // const tailwindConfig = fs.readFileSync(path.join(templatesFolder, "tailwind.txt"), {encoding:"utf-8"}).toString()
+    const viteConfig = `
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+// https://vitejs.dev/config/
+export default defineConfig({
+  plugins: [react()],
+})
+`;
+
+    const esLint = `module.exports = {
+  root: true,
+  env: { browser: true, es2020: true },
+  extends: [
+    'eslint:recommended',
+    'plugin:react/recommended',
+    'plugin:react/jsx-runtime',
+    'plugin:react-hooks/recommended',
+  ],
+  ignorePatterns: ['dist', '.eslintrc.cjs'],
+  parserOptions: { ecmaVersion: 'latest', sourceType: 'module' },
+  settings: { react: { version: '18.2' } },
+  plugins: ['react-refresh'],
+  rules: {
+    'react/jsx-no-target-blank': 'off',
+    'react-refresh/only-export-components': [
+      'warn',
+      { allowConstantExport: true },
+    ],
+  },
+}
+`;
+
+    const postCss = `export default {
+  plugins: {
+    tailwindcss: {},
+  },
+}
+`;
+
+    // const tailwindConfig = fs.readFileSync(path.join(templatesFolder, "tailwind.txt"), {encoding:"utf-8"}).toString()
+
+    const tailwindConfig = `
+  /** @type {import('tailwindcss').Config} */
+  export default {
+    content: [
+      "./index.html",
+      "./src/**/*.{js,ts,jsx,tsx}",
+    ],
+    theme: {
+      extend: {},
+    },
+    plugins: [],
+  }
+`;
+
+    fs.writeFileSync(path.join(targetFolder, "package.json"), packageJson, {
+      encoding: "utf-8",
+    });
+    fs.writeFileSync(path.join(targetFolder, "postcss.config.js"), postCss, {
+      encoding: "utf-8",
+    });
+    fs.writeFileSync(path.join(targetFolder, "vite.config.js"), viteConfig, {
+      encoding: "utf-8",
+    });
+    fs.writeFileSync(path.join(targetFolder, ".eslintrc.cjs"), esLint, {
+      encoding: "utf-8",
+    });
+
+    fs.mkdirSync(path.join(targetFolder, "public"));
+    fs.mkdirSync(path.join(targetFolder, "src"));
+    fs.writeFileSync(path.join(targetFolder, ".gitignore"), gitIgnore, {
+      encoding: "utf-8",
+    });
+    fs.writeFileSync(path.join(targetFolder, "README.md"), readMe, {
+      encoding: "utf-8",
+    });
+    fs.writeFileSync(
+      path.join(targetFolder, "tailwind.config.js"),
+      tailwindConfig,
+      { encoding: "utf-8" }
+    );
+
+    const sourceFolder = path.join(targetFolder, "src");
+    const publicFolder = path.join(targetFolder, "public");
+
+    const appCssFile = `
+  #root {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 2rem;
+    text-align: center;
+  }
   
-  const tailwindConfig =    `
-  module.exports = {
-  content: [
-     "./src/**/*.{js,jsx,ts,tsx}",
-   ],
-  purge: [],
-  darkMode: false, // or 'media' or 'class'
-  theme: {
-    extend: {},
-  },
-  variants: {
-    extend: {},
-  },
-  plugins: [],
-}
-`
-
-    fs.writeFileSync(path.join(targetFolder, "package.json"), packageJson , {encoding:"utf-8"})
-    
-
-    
-    fs.mkdirSync(path.join(targetFolder, "public"))
-    fs.mkdirSync(path.join(targetFolder, "src"))
-    fs.writeFileSync(path.join(targetFolder, ".gitignore"), gitIgnore, {encoding:"utf-8"})
-    fs.writeFileSync(path.join(targetFolder, "README.md"), readMe, {encoding:"utf-8"})
-    fs.writeFileSync(path.join(targetFolder, "tailwind.config.js"), tailwindConfig , {encoding:"utf-8"})
-
-    const sourceFolder = path.join(targetFolder, "src")
-    const publicFolder = path.join(targetFolder, "public")
-
-  const appCssFile = `
-  .App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+  .logo {
+    height: 6em;
+    padding: 1.5em;
+    will-change: filter;
+    transition: filter 300ms;
   }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+  .logo:hover {
+    filter: drop-shadow(0 0 2em #646cffaa);
   }
-  to {
-    transform: rotate(360deg);
+  .logo.react:hover {
+    filter: drop-shadow(0 0 2em #61dafbaa);
   }
-}
-`
-const appJsFile = `
+  
+  @keyframes logo-spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  @media (prefers-reduced-motion: no-preference) {
+    a:nth-of-type(2) .logo {
+      animation: logo-spin infinite 20s linear;
+    }
+  }
+  
+  .card {
+    padding: 2em;
+  }
+  
+  .read-the-docs {
+    color: #888;
+  }
+  
+`;
+    const appJsFile = `
 import './App.css';
 function App() {
 
   return (
    <div className="bg-gradient-to-r from-blue-500 to-purple-500 p-8 rounded-lg shadow-lg m-10">
   <h1 className="text-3xl font-bold text-white mb-5">Welcome to Our App!</h1>
-  <p className="text-lg text-white">Experience the power of React and Tailwind CSS.</p>
+  <p className="text-lg text-white">Experience the power of Vite and Tailwind CSS.</p>
   <p className="text-gray-300 mt-4">Brought to you by Collins Adi</p>
   <a
     href="https://collinsadi.vercel.app"
@@ -276,12 +341,12 @@ function App() {
 }
 
 export default App;
-`
-    
-  const indexCSSFile = `
-@import 'tailwindcss/base';
-@import 'tailwindcss/components';
-@import 'tailwindcss/utilities';
+`;
+
+    const indexCSSFile = `
+  @tailwind base;
+  @tailwind components;
+  @tailwind utilities;
 
 
 body {
@@ -297,96 +362,68 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
-`
-    
-  const indexJSFile = `
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
-
-`
-
-    fs.writeFileSync(path.join(sourceFolder, "App.css"), appCssFile,{encoding:"utf-8"})
-    fs.writeFileSync(path.join(sourceFolder, "App.js"), appJsFile, {encoding:"utf-8"})
-    fs.writeFileSync(path.join(sourceFolder, "index.css"), indexCSSFile, {encoding:"utf-8"})
-    fs.writeFileSync(path.join(sourceFolder, "index.js"), indexJSFile, {encoding:"utf-8"})
-
-  const indexHtmlFile =
-  `<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="Web site created using Codellins Tailwind Setup"
-    />
-    <link rel="apple-touch-icon" href="/logo192.png" />
-    <link rel="manifest" href="/manifest.json" />
-    <title>React App</title>
-  </head>
-  <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
-  </body>
-</html>
 `;
 
-  const manifestFile = `
-  {
-  "short_name": "Codellins Tailwind App",
-  "name": "Codellins Tailwind Sample",
-  "icons": [
-    {
-      "src": "favicon.ico",
-      "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/x-icon"
-    },
-    {
-      "src": "logo192.png",
-      "type": "image/png",
-      "sizes": "192x192"
-    },
-    {
-      "src": "logo512.png",
-      "type": "image/png",
-      "sizes": "512x512"
-    }
-  ],
-  "start_url": ".",
-  "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
-}
-`
-    
-    fs.writeFileSync(path.join(publicFolder, "index.html"), indexHtmlFile, {encoding:"utf-8"})
-    fs.writeFileSync(path.join(publicFolder, "manifest.json"), manifestFile, {encoding:"utf-8"})
-
-    console.log("Installing Required Packages, Do not Exit this Process...".blue)
-
-  execSync(`cd ${name} && npm install`,(error, stdout, stderr) => {
-  if (error) {
-    console.error(`Error Installing Required Packages`.red);
-    console.error(`run cd ${name} and then run npm install `.blue);
-    console.error(`If Packages Dosen't Install Properly Your Project will not Run`.red);
-    return;
-  }
+    const indexJSFile = `
+  import React from 'react'
+  import ReactDOM from 'react-dom/client'
+  import App from './App.jsx'
+  import './index.css'
   
-});
+  ReactDOM.createRoot(document.getElementById('root')).render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>,
+  )
+  
+`;
 
-    console.log(`Tailwind Project Setup Sucessfully,\n Run cd ${name} to start`.green)
+    fs.writeFileSync(path.join(sourceFolder, "App.css"), appCssFile, {
+      encoding: "utf-8",
+    });
+    fs.writeFileSync(path.join(sourceFolder, "App.jsx"), appJsFile, {
+      encoding: "utf-8",
+    });
+    fs.writeFileSync(path.join(sourceFolder, "index.css"), indexCSSFile, {
+      encoding: "utf-8",
+    });
+    fs.writeFileSync(path.join(sourceFolder, "main.jsx"), indexJSFile, {
+      encoding: "utf-8",
+    });
 
-}
+    const indexHtmlFile = `<!doctype html>
+  <html lang="en">
+    <head>
+      <meta charset="UTF-8" />
+      <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>${name}</title>
+    </head>
+    <body>
+      <div id="root"></div>
+      <script type="module" src="/src/main.jsx"></script>
+    </body>
+  </html>
+  
+`;
 
+    fs.writeFileSync(path.join(targetFolder, "index.html"), indexHtmlFile, {
+      encoding: "utf-8",
+    });
 
-createTailwindTemplate()
+    console.log("Done. Now Run:".green);
+
+    if (initialName === ".") {
+      console.log("npm install".cyan);
+      console.log("npm run dev".cyan);
+    } else {
+      console.log(`cd ${name}`.cyan);
+      console.log("npm install".cyan);
+      console.log("npm run dev".cyan);
+    }
+  } catch (error) {
+    console.log("error: ", error);
+  }
+};
+
+createTailwindTemplate();

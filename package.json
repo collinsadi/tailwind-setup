@@ -1,6 +1,6 @@
 {
   "name": "@collinsadi/tailwind-setup",
-  "version": "1.5.6",
+  "version": "2.0.0",
   "description": "An Easy Tailwind Css Environment Set Up for React",
   "main": "index.js",
   "scripts": {
@@ -11,7 +11,7 @@
     "url": "git+https://github.com/collinsadi/tailwind-setup.git"
   },
   "bin": {
-    "codellins-tailwind": "./index.js"
+    "adi-tailwind": "./index.js"
   },
   "keywords": [
     "Tailwind",
